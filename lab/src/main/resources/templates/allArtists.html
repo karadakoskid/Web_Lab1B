@@ -1,0 +1,27 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Artists and Songs</title>
+</head>
+<body>
+<h1>Artists and Their Songs</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Artist</th>
+        <th>Songs</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="entry : ${selectedArtistsMap}">
+        <td th:text="${entry.key.firstName + ' ' + entry.key.lastName}">Artist Name</td>
+        <td>
+            <ul>
+                <li th:each="song : ${entry.value}" th:text="${song.title}">Song Title</li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="/listSongs">Back</a>
+</body>
+</html>

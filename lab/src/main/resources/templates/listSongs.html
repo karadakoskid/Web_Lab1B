@@ -1,0 +1,37 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Songs Homepage - Welcome to My Music Store</title>
+    <style type="text/css">
+        body {
+            width: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome to My Music Store</h1>
+</header>
+<main>
+    <h2>Choose a song:</h2>
+    <form action="listSongs" th:method="post">
+        <div th:each="song: ${songs}">
+            <label>
+                <input type="radio" th:value="${song.trackId}" name="songname">
+                <span>
+                    <b>Title:</b><span th:text="${song.title}"> </span>
+                    <b>Genre:</b><span th:text="${song.genre}"></span>
+                    <b>Release Year:</b><span th:text="${song.releaseYear}"> </span>
+                    <a th:href="@{/songDetails(trackId=${song.trackId})}" class="button">Details</a>
+                </span>
+                <br>
+            </label>
+        </div>
+        <input type='submit' value='Submit'>
+    </form>
+
+    <a href="/allArtists">View Selected Artists and Songs</a>
+</main>
+</body>
+</html>
