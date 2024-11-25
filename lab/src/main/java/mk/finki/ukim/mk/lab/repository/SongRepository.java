@@ -1,9 +1,11 @@
 package mk.finki.ukim.mk.lab.repository;
 
 import mk.finki.ukim.mk.lab.bootstrap.DataHolder;
+import mk.finki.ukim.mk.lab.model.Album;
 import mk.finki.ukim.mk.lab.model.Artist;
 import mk.finki.ukim.mk.lab.model.Song;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +32,15 @@ public class SongRepository {
         return null; //ako ne vrajkame null
     }
 
+    public Optional<Song> save(String title,String genre, Integer releaseYear, Album album){
+        DataHolder.songs.removeIf(i->i.getTitle().equals(title));
+        Song song=new Song(title,genre,releaseYear,album);
+        DataHolder.songs.add(song);
+        return Optional.of(song);
+    }
 
+    public void deleteById(Long id){
+        DataHolder.songs.removeIf(i->i.getId().equals(id));
+    }
 
 }

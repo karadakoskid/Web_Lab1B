@@ -33,7 +33,7 @@
 <section>
     <h2>Select artist:</h2>
 
-    <form action="artist" th:method="post">
+    <form action="/artists/select" th:method="post">
        <input type="hidden" name="trackId" th:value="${idto}"/> <!--  ovde kako value go stavame idto sto go imame zemeno vo get na ArtistServlet i stavame name trackId preku koe ke go zemime dolu vo Post zs sekogas preku name se zemta vo post-->
         <div th:each="artist: ${artists}"><!--//so artists ke gi zeam site artisti-->
             <label>
