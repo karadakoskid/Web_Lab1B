@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/artists")
@@ -30,63 +27,104 @@ public class ArtistController {
 
 
     @GetMapping("/select")
-    public String selectArtistsPage(@RequestParam String trackId,Model model){
-        List<Artist> artists=artistService.listArtists();
-        model.addAttribute("idto",trackId);
-        model.addAttribute("artists",artists);
+    public String selectArtistsPage(@RequestParam Long trackId, Model model) {
+        List<Artist> artists = artistService.listArtists();
+        model.addAttribute("idto", trackId);
+        model.addAttribute("artists", artists);
         return "artistsList";
     }
 
+    //    @PostMapping("/select")
+//    public String saveSelectedArtist(@RequestParam List<String> artistList, @RequestParam Long trackId, HttpSession session) {
+//        // Retrieve or create the selectedArtistsMap
+//        Map<String, List<String>> selectedArtistMap = (Map<String, List<String>>) session.getAttribute("selectedArtistsMap");
+//
+//        if (selectedArtistMap == null) {
+//            selectedArtistMap = new HashMap<>();
+//        }
+//
+//        // Get or create the list of selected artists for the given trackId
+//        List<String> selectedArtists = selectedArtistMap.getOrDefault(trackId, new ArrayList<>());
+//
+//        // Add the selected artists to the list (avoid duplicates)
+//        for (String artistId : artistList) {
+//            if (!selectedArtists.contains(artistId)) {
+//                selectedArtists.add(artistId);
+//            }
+//        }
+//
+//        // Save the updated list back to the session
+//        selectedArtistMap.put(String.valueOf(trackId), selectedArtists);
+//        session.setAttribute("selectedArtistsMap", selectedArtistMap);
+//
+//        return "redirect:/songs/details?trackId=" + trackId;
+//    }
     @PostMapping("/select")
-    public String saveSelectedArtist(@RequestParam List<String> artistList, @RequestParam String trackId, HttpSession session) {
-        // Retrieve or create the selectedArtistsMap
-        Map<String, List<String>> selectedArtistMap = (Map<String, List<String>>) session.getAttribute("selectedArtistsMap");
-
-        if (selectedArtistMap == null) {
-            selectedArtistMap = new HashMap<>();
+    public String saveSelectedArtist(@RequestParam List<String> artistList, @RequestParam Long trackId) {
+        // Retrieve the song from the database
+        Optional<Song> optionalSong = songService.findByTrackId(trackId);
+        if (optionalSong.isEmpty()) {
+            return "redirect:/songs?error=SongNotFound";
         }
 
-        // Get or create the list of selected artists for the given trackId
-        List<String> selectedArtists = selectedArtistMap.getOrDefault(trackId, new ArrayList<>());
+        Song song = optionalSong.get();
 
-        // Add the selected artists to the list (avoid duplicates)
         for (String artistId : artistList) {
-            if (!selectedArtists.contains(artistId)) {
-                selectedArtists.add(artistId);
+            Long artistIdLong = Long.valueOf(artistId);
+
+            // Retrieve the artist from the database
+            Optional<Artist> optionalArtist = artistService.findById(artistIdLong);
+            if (optionalArtist.isPresent()) {
+                Artist artist = optionalArtist.get();
+
+                // Add the artist to the song using the service method
+                song = artistService.addSongToArtist(song, artist);
             }
         }
 
-        // Save the updated list back to the session
-        selectedArtistMap.put(trackId, selectedArtists);
-        session.setAttribute("selectedArtistsMap", selectedArtistMap);
-
+        // Redirect to the song details page after the artists are added to the song
         return "redirect:/songs/details?trackId=" + trackId;
     }
 
+//    @GetMapping("/all") OVA KO NEMAVME BAZA KO BESE IN SESSION
+//    public String showAllArtistsAndSongs(HttpSession session, Model model) {
+//        Map<String, List<String>> selectedArtistsMap =
+//                (Map<String, List<String>>) session.getAttribute("selectedArtistsMap");
+//
+//        Map<Artist, List<Song>> artistSongsMap = new HashMap<>();
+//
+//        if (selectedArtistsMap != null) {
+//            for (Map.Entry<String, List<String>> entry : selectedArtistsMap.entrySet()) {
+//                Long trackId = Long.valueOf(entry.getKey());
+//                List<String> artistIds = entry.getValue();
+//
+//                songService.findByTrackId(trackId).ifPresent(song -> {
+//                    for (String artistId : artistIds) {
+//                        artistService.findById(Long.parseLong(artistId))
+//                                .ifPresent(artist -> artistSongsMap
+//                                        .computeIfAbsent(artist, k -> new ArrayList<>())
+//                                        .add(song));
+//                    }
+//                });
+//            }
+//        }
+//
+//        model.addAttribute("selectedArtistsMap", artistSongsMap);
+//        return "allArtists";
+//    }
+
     @GetMapping("/all")
     public String showAllArtistsAndSongs(HttpSession session, Model model) {
-        Map<String, List<String>> selectedArtistsMap =
-                (Map<String, List<String>>) session.getAttribute("selectedArtistsMap");
 
-        Map<Artist, List<Song>> artistSongsMap = new HashMap<>();
+        List<Song> songs=songService.listSongs();
+        Map<Artist, List<Song>> artistSongMap = new HashMap<>();
 
-        if (selectedArtistsMap != null) {
-            for (Map.Entry<String, List<String>> entry : selectedArtistsMap.entrySet()) {
-                String trackId = entry.getKey();
-                List<String> artistIds = entry.getValue();
-
-                songService.findByTrackId(trackId).ifPresent(song -> {
-                    for (String artistId : artistIds) {
-                        artistService.findById(Long.parseLong(artistId))
-                                .ifPresent(artist -> artistSongsMap
-                                        .computeIfAbsent(artist, k -> new ArrayList<>())
-                                        .add(song));
-                    }
-                });
+        for(Song s :songs){
+            for(Artist artist : s.getPerformers()){
+                artistSongMap.computeIfAbsent(artist,k->new ArrayList<>()).add(s);
             }
         }
-
-        model.addAttribute("selectedArtistsMap", artistSongsMap);
+        model.addAttribute("selectedArtistsMap", artistSongMap);
         return "allArtists";
     }
 }

@@ -47,46 +47,61 @@ public class SongController {
         return "redirect:/songs?error=No song selected";
     }
 
+//    @GetMapping("/details") OVA BESE ZA KO NEMAVME BAZAA VO SESIJATA
+//    public String showSongDetails(@RequestParam Long trackId, Model model, HttpSession session){
+//        Optional<Song> songOptional=songService.findByTrackId(trackId);
+//
+//        if(songOptional.isEmpty()){
+//            return "redirect:/songs?error=Song not found";
+//        }
+//
+//        Song song=songOptional.get();//ja zeame vaka pesnata po trackingid
+//        model.addAttribute("song",song);//vaka ke ja prenesime vo html
+//
+//        Map<String,List<String>> selectedArtistMap=
+//                (Map<String,List<String>>) session.getAttribute("selectedArtistsMap");
+//
+//        if(selectedArtistMap !=null){
+//            List<String> selectedArtistIds=selectedArtistMap.get(trackId);
+//
+//            if(selectedArtistIds !=null){
+//                List<Artist> artists=new ArrayList<>();
+//                for(String artistId : selectedArtistIds){
+//                    Optional<Artist> artistOptional = artistService.findById(Long.parseLong(artistId));
+//                    artistOptional.ifPresent(artists::add);
+//
+//                }
+//                model.addAttribute("artists",artists);
+//            }
+//        }
+//        return "songDetails"; //ja vrakat songDetails.html
+//    }
     @GetMapping("/details")
-    public String showSongDetails(@RequestParam String trackId, Model model, HttpSession session){
+    public String showSongDetails(@RequestParam Long trackId, Model model, HttpSession session){
         Optional<Song> songOptional=songService.findByTrackId(trackId);
-
-        if(songOptional.isEmpty()){
-            return "redirect:/songs?error=Song not found";
+        if(songOptional.isPresent()){
+            Song song=songOptional.get();
+            model.addAttribute("song",song);
+            model.addAttribute("artists",song.getPerformers());
+            return "songDetails";
         }
-
-        Song song=songOptional.get();//ja zeame vaka pesnata po trackingid
-        model.addAttribute("song",song);//vaka ke ja prenesime vo html
-
-        Map<String,List<String>> selectedArtistMap=
-                (Map<String,List<String>>) session.getAttribute("selectedArtistsMap");
-
-        if(selectedArtistMap !=null){
-            List<String> selectedArtistIds=selectedArtistMap.get(trackId);
-
-            if(selectedArtistIds !=null){
-                List<Artist> artists=new ArrayList<>();
-                for(String artistId : selectedArtistIds){
-                    Optional<Artist> artistOptional = artistService.findById(Long.parseLong(artistId));
-                    artistOptional.ifPresent(artists::add);
-                }
-                model.addAttribute("artists",artists);
-            }
-        }
-        return "songDetails"; //ja vrakat songDetails.html
+        return "redirect:/songs";
     }
+
+
+
 
     @PostMapping("/add")
     public String saveSong(@RequestParam String title,@RequestParam String genre,@RequestParam int releaseYear,@RequestParam Long albumId){
 
-            this.songService.save(title,genre,releaseYear,albumId);
+        this.songService.save(title,genre,releaseYear,albumId);
 
         return "redirect:/songs";
     }
 
     @GetMapping("/edit-form/{songId}")
     public String getEditSongForm(@PathVariable Long songId, Model model) {
-        Optional<Song> songOptional = this.songService.findByTrackId(String.valueOf(songId));
+        Optional<Song> songOptional = this.songService.findByTrackId(songId);
         if (songOptional.isPresent()) {
             Song song = songOptional.get();
             List<Album> albums = this.albumService.findAll();

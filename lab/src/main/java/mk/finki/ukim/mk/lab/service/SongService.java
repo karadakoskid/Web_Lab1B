@@ -9,8 +9,9 @@ import java.util.Optional;
 public interface SongService {
     List<Song> listSongs();
     Artist addArtistToSong(Artist artist, Song song);
-    Optional<Song> findByTrackId(String trackId);
+    Optional<Song> findByTrackId(Long trackId);
     Optional<Song> save(String title, String genre, Integer releaseYear,Long albumId);
     void deleteById(Long id);
+    List<Song> findAllByAlbum_Id(Long albumId);
 
 }

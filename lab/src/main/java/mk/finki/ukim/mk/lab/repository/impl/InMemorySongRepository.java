@@ -1,18 +1,16 @@
-package mk.finki.ukim.mk.lab.repository;
+package mk.finki.ukim.mk.lab.repository.impl;
 
 import mk.finki.ukim.mk.lab.bootstrap.DataHolder;
 import mk.finki.ukim.mk.lab.model.Album;
 import mk.finki.ukim.mk.lab.model.Artist;
 import mk.finki.ukim.mk.lab.model.Song;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
-public class SongRepository {
+public class InMemorySongRepository {
 
     public List<Song> findAll(){
         return DataHolder.songs;
@@ -22,7 +20,7 @@ public class SongRepository {
         return DataHolder.songs.stream().filter(i->i.getTrackId().equals(trackId)).findFirst();
     }
     public Artist addArtistToSong(Artist artist, Song song){
-        Optional<Song> optionalSong=findByTrackId(song.getTrackId());//Ja naogjame pesnata preku id
+        Optional<Song> optionalSong=findByTrackId(String.valueOf(song.getTrackId()));//Ja naogjame pesnata preku id
 
         if(optionalSong.isPresent()){//aku e postoecka pesnata
             Song existingSong=optionalSong.get(); //togass ja zeam cela classa i so e = najdenata pesna zaradi so edna pesna ja sostavuvat delovite vo klasata
@@ -40,7 +38,7 @@ public class SongRepository {
     }
 
     public void deleteById(Long id){
-        DataHolder.songs.removeIf(i->i.getId().equals(id));
+        DataHolder.songs.removeIf(i->i.getTrackId().equals(id));
     }
 
 }

@@ -1,8 +1,8 @@
 package mk.finki.ukim.mk.lab.service.impl;
 
 import mk.finki.ukim.mk.lab.model.Album;
-import mk.finki.ukim.mk.lab.model.Song;
-import mk.finki.ukim.mk.lab.repository.AlbumRepository;
+import mk.finki.ukim.mk.lab.repository.impl.InMemoryAlbumRepository;
+import mk.finki.ukim.mk.lab.repository.jpa.AlbumRepository;
 import mk.finki.ukim.mk.lab.service.AlbumService;
 import org.springframework.stereotype.Service;
 

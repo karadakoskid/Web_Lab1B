@@ -11,4 +11,5 @@ public interface ArtistService {
     Optional<Artist> findById(Long id);
 
     Song addSongToArtist(Song song,Artist artist);
+
 }
