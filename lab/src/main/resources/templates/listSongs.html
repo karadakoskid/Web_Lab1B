@@ -63,7 +63,7 @@
                     </a>
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <a class="btn btn-light btn-sm ml-3" href="/logout">
-<!--                            <i class="fa-solid fa-right-from-bracket"></i> Logout-->
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
                         </a>
                     </li>
                 </ul>
@@ -113,7 +113,7 @@
                                         </button>
                                     </form>
                                 </th:block>
-
+                                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                                 <th:block>
                                     <form th:action="@{'/songs/delete/{id}' (id=${song.getTrackId()})}"
                                           th:method="delete">
@@ -123,11 +123,14 @@
                                         </button>
                                     </form>
                                 </th:block>
+                                </th:block>
+                                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                                 <th:block>
                                     <a th:href="@{'/songs/edit-form/{id}' (id=${song.trackId})}"
                                        class="btn btn-sm btn-info edit-product">
                                         <i class="fa fa-trash">Edit</i>
                                     </a>
+                                </th:block>
                                 </th:block>
                                 <th:block>
                                     <a th:href="@{/songs/details(trackId=${song.trackId})}"
@@ -145,9 +148,11 @@
             <div class="col mb-3">
                 <div class="row">
                     <div class="col-sm-12 col-md-12">
+                        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
                         <a href="/songs/add-form" class="btn btn-block btn-dark add-product-btn">
                             Add new song
                         </a>
+                        </th:block>
                     </div>
                 </div>
             </div>

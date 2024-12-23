@@ -48,5 +48,5 @@ public class Song {
     }
 
 
-    //da go napram so save so id, i da go donapram details
+
 }
